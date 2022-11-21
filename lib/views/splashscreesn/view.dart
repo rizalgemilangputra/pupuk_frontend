@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:localstorage/localstorage.dart';
+import 'package:pupuk_frontend/constants.dart';
+
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
 
@@ -9,6 +12,8 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
+  final LocalStorage localStorage = LocalStorage(AppConfig.localStorageName);
+
   @override
   void initState() {
     super.initState();
@@ -16,9 +21,14 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   startSplashSplashScreen() async {
-    var duration = const Duration(seconds: 5);
+    var duration = const Duration(seconds: 3);
     Timer(duration, () {
-      Navigator.pushReplacementNamed(context, '/home');
+      var isLogin = localStorage.getItem('isLogin');
+      if (isLogin != null && isLogin) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
     });
   }
 

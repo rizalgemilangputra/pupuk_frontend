@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:http/http.dart' as http;
 import 'package:pupuk_frontend/utils/camera/Camera.dart';
 
 class PreviewScreen extends StatefulWidget {
@@ -47,19 +46,19 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   uploadPhoto() async {
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('http://api.sobatcoding.com/upload.php'));
+    // var request = http.MultipartRequest(
+    //     'POST', Uri.parse('http://api.sobatcoding.com/upload.php'));
 
-    request.files.add(http.MultipartFile(
-        'file',
-        File(widget.imgPath.path).readAsBytes().asStream(),
-        File(widget.imgPath.path).lengthSync(),
-        filename: widget.imgPath.path.split("/").last));
-    var res = await request.send();
+    // request.files.add(http.MultipartFile(
+    //     'file',
+    //     File(widget.imgPath.path).readAsBytes().asStream(),
+    //     File(widget.imgPath.path).lengthSync(),
+    //     filename: widget.imgPath.path.split("/").last));
+    // var res = await request.send();
 
-    var responseBytes = await res.stream.toBytes();
-    var responseString = utf8.decode(responseBytes);
+    // var responseBytes = await res.stream.toBytes();
+    // var responseString = utf8.decode(responseBytes);
 
-    debugPrint("response: " + responseString.toString());
+    // debugPrint("response: " + responseString.toString());
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pupuk_frontend/constants.dart';
-import 'package:pupuk_frontend/utils/MapUtils.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key? key}) : super(key: key);
+  final dynamic tanaman;
+  const DetailPage({Key? key, this.tanaman}) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -14,7 +14,7 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppCollors.appBar,
+        backgroundColor: AppStyle.appBar,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -32,7 +32,7 @@ class _DetailPageState extends State<DetailPage> {
             alignment: Alignment.center,
             margin: const EdgeInsets.only(top: 50),
             child: Hero(
-              tag: 'homeHero-0',
+              tag: 'imgHero-${widget.tanaman.id}',
               child: Image.asset('assets/images/sawit.jpeg'),
             ),
           ),
@@ -47,9 +47,9 @@ class _DetailPageState extends State<DetailPage> {
                   // ignore: prefer_const_literals_to_create_immutables
                   children: [
                     const Text('Umur'),
-                    const Text(
-                      '12 Bulan',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      widget.tanaman.umur.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -59,21 +59,25 @@ class _DetailPageState extends State<DetailPage> {
                   // ignore: prefer_const_literals_to_create_immutables
                   children: [
                     const Text('Jenis Pupuk'),
-                    const Text(
-                      'Organik Bokashi',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      widget.tanaman.namaPupuk,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 const Divider(color: Colors.black),
+                const SizedBox(height: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   // ignore: prefer_const_literals_to_create_immutables
                   children: [
-                    const Text('Keterangan'),
                     const Text(
-                      'Tempat Lokasi',
+                      'Keterangan',
                       style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      widget.tanaman.keterangan,
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
-class AppCollors {
+class AppStyle {
   static Color appBar = const Color.fromARGB(255, 71, 120, 134);
+}
+
+class AppConfig {
+  static String url = 'http://192.168.1.5/pupuk_backend/public/';
+  // static String url = 'https://pupukbackend-production.up.railway.app/';
+  static String localStorageName = 'pupuk';
 }

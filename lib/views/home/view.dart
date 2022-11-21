@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:pupuk_frontend/blocs/tanaman/tanaman_bloc.dart';
 import 'package:pupuk_frontend/constants.dart';
+import 'package:pupuk_frontend/models/tanaman_model.dart';
 import 'package:pupuk_frontend/utils/camera/Camera.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,40 +14,93 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TanamanBloc _tanamanBloc = TanamanBloc();
+  final LocalStorage _localStorage = LocalStorage(AppConfig.localStorageName);
+
+  @override
+  void initState() {
+    _tanamanBloc.add(GetTanamanList());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rekomendasi Pupuk'),
-        backgroundColor: AppCollors.appBar,
+        backgroundColor: AppStyle.appBar,
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await _localStorage.setItem('is_login', false);
+              await _localStorage.setItem('X-Auth-Token', null);
+
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            icon: const Icon(Icons.exit_to_app),
+          )
+        ],
       ),
-      body: WillPopScope(
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            child: _gridView(),
-          ),
-          onWillPop: () => _onBackButtonDoubleClicked(context)),
+      body: Container(
+        padding: const EdgeInsets.all(8),
+        child: _gridPage(),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const CameraPage())),
+          context,
+          MaterialPageRoute(builder: (_) => const CameraPage()),
+        ),
         backgroundColor: Colors.green,
         child: const Icon(Icons.camera_alt),
       ),
     );
   }
 
-  GridView _gridView() {
+  Widget _gridPage() {
+    return BlocProvider(
+      create: (_) => _tanamanBloc,
+      child: BlocListener<TanamanBloc, TanamanState>(
+        listener: (context, state) {
+          if (state is TanamanError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message!),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<TanamanBloc, TanamanState>(
+          builder: (context, state) {
+            if (state is TanamanInitial) {
+              return _buildLoading();
+            } else if (state is TanamanLoading) {
+              return _buildLoading();
+            } else if (state is TanamanLoaded) {
+              return _listTanaman(context, state.tanamanModel);
+            } else if (state is TanamanError) {
+              return Container();
+            } else {
+              return Container();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _listTanaman(BuildContext context, List<TanamanModel> tanamanList) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 2 / 2.2,
       ),
-      itemCount: 10,
+      itemCount: tanamanList.length,
       itemBuilder: (BuildContext context, index) {
+        TanamanModel tanaman = tanamanList[index];
         return GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/home/detail');
+            Navigator.pushNamed(context, '/home/detail', arguments: tanaman);
           },
           child: Card(
             elevation: 1,
@@ -51,7 +108,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 Hero(
-                  tag: 'homeHero-$index',
+                  tag: 'imgHero-${tanaman.id}',
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8.0),
@@ -72,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                           color: Color.fromARGB(137, 27, 27, 27),
                         ),
                       ),
-                      const Text('01-01-2022'),
+                      Text(tanaman.updatedAt.toString()),
                     ],
                   ),
                 ),
@@ -84,26 +141,5 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<bool> _onBackButtonDoubleClicked(BuildContext context) async {
-    final backPressedTime = DateTime.now();
-    final difference = DateTime.now().difference(backPressedTime);
-
-    if (difference >= const Duration(seconds: 3)) {
-      toast(context, 'Tekan Kembali Untuk Keluar');
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  void toast(BuildContext context, String text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          text,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 }
