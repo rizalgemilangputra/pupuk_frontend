@@ -1,9 +1,11 @@
+import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:pupuk_frontend/blocs/tanaman/tanaman_bloc.dart';
 import 'package:pupuk_frontend/constants.dart';
 import 'package:pupuk_frontend/models/tanaman_model.dart';
+import 'package:pupuk_frontend/repository/tanaman_repository.dart';
 import 'package:pupuk_frontend/utils/camera/Camera.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,10 +49,25 @@ class _HomePageState extends State<HomePage> {
         child: _gridPage(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CameraPage()),
-        ),
+        onPressed: () async {
+          final callBack = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CameraPage()),
+          );
+          if (callBack == true) {
+            ArtSweetAlert.show(
+              context: context,
+              artDialogArgs: ArtDialogArgs(
+                type: ArtSweetAlertType.success,
+                title: "Berhasil",
+                text: "Berhasil menambah tanaman",
+              ),
+            );
+            setState(() {
+              _tanamanBloc.add(GetTanamanList());
+            });
+          }
+        },
         backgroundColor: Colors.green,
         child: const Icon(Icons.camera_alt),
       ),
@@ -99,6 +116,46 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, index) {
         TanamanModel tanaman = tanamanList[index];
         return GestureDetector(
+          onLongPress: () async {
+            TanamanRepository tanamanRepository = TanamanRepository();
+
+            ArtDialogResponse response = await ArtSweetAlert.show(
+              barrierDismissible: false,
+              context: context,
+              artDialogArgs: ArtDialogArgs(
+                denyButtonText: "tidak",
+                title: "Peringatan",
+                text: "Anda akan menghapus data ini?",
+                confirmButtonText: "Ya",
+                type: ArtSweetAlertType.warning,
+              ),
+            );
+
+            if (response == null) {
+              return;
+            }
+
+            if (response.isTapConfirmButton) {
+              await tanamanRepository.deleteTanaman(tanaman.id).then((value) {
+                if (value['code'] == 201) {
+                  ArtSweetAlert.show(
+                    context: context,
+                    artDialogArgs: ArtDialogArgs(
+                        type: ArtSweetAlertType.success,
+                        title: 'Berhasil menghapus data'),
+                  );
+                } else {
+                  ArtSweetAlert.show(
+                    context: context,
+                    artDialogArgs: ArtDialogArgs(
+                        type: ArtSweetAlertType.danger,
+                        title: 'Gagal menghapus data'),
+                  );
+                }
+              });
+              _tanamanBloc.add(GetTanamanList());
+            }
+          },
           onTap: () {
             Navigator.pushNamed(context, '/home/detail', arguments: tanaman);
           },

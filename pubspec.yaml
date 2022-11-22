@@ -41,6 +41,7 @@ dependencies:
   equatable: ^2.0.5
   dio: ^4.0.6
   localstorage: ^4.0.0+1
+  art_sweetalert: ^0.0.5
 
 dev_dependencies:
   flutter_test:

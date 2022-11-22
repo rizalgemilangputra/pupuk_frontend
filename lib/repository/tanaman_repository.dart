@@ -30,6 +30,33 @@ class TanamanRepository {
       throw Exception("Data not found / Connection issue => $error");
     }
   }
+
+  Future<dynamic> postTanaman(data) async {
+    try {
+      _dio.options.headers['content-Type'] = 'application/json';
+      _dio.options.headers["X-Auth-Token"] =
+          localStorage.getItem('X-Auth-Token');
+      Response response = await _dio.post('$_url/plant', data: data);
+      var res = response.data;
+      return res;
+    } catch (error, stackTrace) {
+      throw Exception(
+          "Data not found / Connection issue => $error => $stackTrace");
+    }
+  }
+
+  Future<dynamic> deleteTanaman(id) async {
+    try {
+      _dio.options.headers['content-Type'] = 'application/json';
+      _dio.options.headers["X-Auth-Token"] =
+          localStorage.getItem('X-Auth-Token');
+
+      Map<String, dynamic> data = {"id": id};
+      Response response = await _dio.post('$_url/delete-plant', data: data);
+      print(response.data);
+      return response.data;
+    } catch (error) {}
+  }
 }
 
 class NetworkError extends Error {}

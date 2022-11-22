@@ -1,10 +1,11 @@
+import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:math' as math;
+import 'dart:convert' as convert;
 
-import 'package:pupuk_frontend/utils/camera/PreviewScreen.dart';
+import 'package:pupuk_frontend/repository/tanaman_repository.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -143,7 +144,7 @@ class _CameraPageState extends State<CameraPage>
             FloatingActionButton(
               heroTag: null,
               onPressed: () {
-                // onCapture(context);
+                onCapture(context);
               },
               // ignore: sort_child_properties_last
               child: const Icon(Icons.camera),
@@ -178,15 +179,17 @@ class _CameraPageState extends State<CameraPage>
 
   onCapture(context) async {
     try {
-      await cameraController!.takePicture().then((value) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PreviewScreen(
-              imgPath: value,
-            ),
-          ),
-        );
+      await cameraController!.takePicture().then((value) async {
+        List<int> photoAsBytes = await value.readAsBytes();
+        String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
+        TanamanRepository tanamanRepository = TanamanRepository();
+        Map<String, dynamic> data = {"umur": 8, "gambar": photoAsBase64};
+        tanamanRepository.postTanaman(data).then((value) {
+          if (value['code'] == 201) {
+            Navigator.pop(context, true);
+          }
+        });
       });
     } catch (e) {
       debugPrint('error $e');
