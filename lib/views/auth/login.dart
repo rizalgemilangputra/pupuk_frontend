@@ -27,9 +27,6 @@ class _LoginPageState extends State<LoginPage> {
           "password": password.text
         };
         loginRepository.login(data).then((value) {
-          setState(() {
-            _isLogin = false;
-          });
           if (value == 200) {
             Navigator.pushReplacementNamed(context, '/home');
           } else if (value == 401) {
@@ -41,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
               errorMessage = 'Email / Password tidak boleh kosong.';
             });
           }
+          _isLogin = false;
         });
       }
     }
@@ -85,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
           TextFormField(
             controller: password,
             cursorColor: Colors.orange,
+            obscureText: true,
             decoration: InputDecoration(
               labelStyle: const TextStyle(color: Colors.black),
               border: const OutlineInputBorder(),
