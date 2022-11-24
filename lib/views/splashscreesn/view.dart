@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:localstorage/localstorage.dart';
 import 'package:pupuk_frontend/constants.dart';
 
@@ -21,15 +19,15 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   startSplashSplashScreen() async {
-    var duration = const Duration(seconds: 3);
-    Timer(duration, () {
-      var isLogin = localStorage.getItem('isLogin');
-      if (isLogin != null && isLogin) {
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        Navigator.pushReplacementNamed(context, '/login');
-      }
-    });
+    var isLogin = await localStorage.getItem('isLogin');
+    print(isLogin);
+    if (isLogin != null && isLogin) {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   @override
