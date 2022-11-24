@@ -1,7 +1,5 @@
-import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'dart:math' as math;
 import 'dart:convert' as convert;
 
@@ -154,27 +152,6 @@ class _CameraPageState extends State<CameraPage>
         ),
       ),
     );
-  }
-
-  getCameraLensIcon(lensDirection) {
-    switch (lensDirection) {
-      case CameraLensDirection.back:
-        return CupertinoIcons.switch_camera;
-      case CameraLensDirection.front:
-        return CupertinoIcons.switch_camera_solid;
-      case CameraLensDirection.external:
-        return CupertinoIcons.photo_camera;
-      default:
-        return Icons.device_unknown;
-    }
-  }
-
-  onSwitchCamera() {
-    selectedCameraIndex = selectedCameraIndex! < cameras!.length - 1
-        ? selectedCameraIndex! + 1
-        : 0;
-    CameraDescription selectedCamera = cameras![selectedCameraIndex!];
-    initCamera(selectedCamera);
   }
 
   onCapture(context) async {

@@ -33,7 +33,7 @@ class _DetailPageState extends State<DetailPage> {
             margin: const EdgeInsets.only(top: 50),
             child: Hero(
               tag: 'imgHero-${widget.tanaman.id}',
-              child: Image.asset('assets/images/sawit.jpeg'),
+              child: Image.network(widget.tanaman.gambar),
             ),
           ),
           const SizedBox(height: 50),

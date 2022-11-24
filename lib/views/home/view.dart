@@ -1,5 +1,6 @@
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:pupuk_frontend/blocs/tanaman/tanaman_bloc.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TanamanBloc _tanamanBloc = TanamanBloc();
   final LocalStorage _localStorage = LocalStorage(AppConfig.localStorageName);
+  bool _shouldPop = false;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _HomePageState extends State<HomePage> {
               await _localStorage.setItem('is_login', false);
               await _localStorage.setItem('X-Auth-Token', null);
 
+              // ignore: use_build_context_synchronously
               Navigator.pushReplacementNamed(context, '/login');
             },
             icon: const Icon(Icons.exit_to_app),
@@ -46,7 +49,11 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
-        child: _gridPage(),
+        child: WillPopScope(
+            child: _gridPage(),
+            onWillPop: () async {
+              return _shouldPop;
+            }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -60,7 +67,7 @@ class _HomePageState extends State<HomePage> {
               artDialogArgs: ArtDialogArgs(
                 type: ArtSweetAlertType.success,
                 title: "Berhasil",
-                text: "Berhasil menambah tanaman",
+                text: "Anda berhasil menambah data",
               ),
             );
             setState(() {
@@ -110,13 +117,14 @@ class _HomePageState extends State<HomePage> {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 2 / 2.2,
+        childAspectRatio: 2 / 2.4,
       ),
       itemCount: tanamanList.length,
       itemBuilder: (BuildContext context, index) {
         TanamanModel tanaman = tanamanList[index];
         return GestureDetector(
           onLongPress: () async {
+            HapticFeedback.vibrate();
             TanamanRepository tanamanRepository = TanamanRepository();
 
             ArtDialogResponse response = await ArtSweetAlert.show(
@@ -131,6 +139,7 @@ class _HomePageState extends State<HomePage> {
               ),
             );
 
+            // ignore: unnecessary_null_comparison
             if (response == null) {
               return;
             }
@@ -171,7 +180,10 @@ class _HomePageState extends State<HomePage> {
                       topLeft: Radius.circular(8.0),
                       topRight: Radius.circular(8.0),
                     ),
-                    child: Image.asset('assets/images/sawit.jpeg'),
+                    child: Image.network(
+                      tanaman.gambar.toString(),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Padding(
