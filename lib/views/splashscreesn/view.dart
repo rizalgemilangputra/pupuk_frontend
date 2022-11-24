@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:pupuk_frontend/constants.dart';
+import 'package:pupuk_frontend/repository/login_repository.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
@@ -10,7 +11,8 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
-  final LocalStorage localStorage = LocalStorage(AppConfig.localStorageName);
+  final LocalStorage _localStorage = LocalStorage(AppConfig.localStorageName);
+  final LoginRepository _loginRepository = LoginRepository();
 
   @override
   void initState() {
@@ -19,11 +21,20 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   startSplashSplashScreen() async {
-    var isLogin = await localStorage.getItem('isLogin');
-    print(isLogin);
+    await _localStorage.ready;
+    var isLogin = await _localStorage.getItem('isLogin');
+    var token = await _localStorage.getItem('X-Auth-Token');
     if (isLogin != null && isLogin) {
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacementNamed(context, '/home');
+      int? cekToken = await _loginRepository.cekToken(token);
+      if (cekToken == 200) {
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        await _localStorage.setItem('isLogin', false);
+        await _localStorage.setItem('X-Auth-Token', null);
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, '/login');
+      }
     } else {
       // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, '/login');

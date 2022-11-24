@@ -25,4 +25,19 @@ class LoginRepository {
     dynamic res = response.data;
     return res;
   }
+
+  Future<int> cekToken(token) async {
+    Map<String, String> headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    Map<String, dynamic> params = {"token": token};
+    Response response = await _dio.get(
+      '$_url/cek-token',
+      queryParameters: params,
+      options: Options(headers: headers),
+    );
+    return response.data['code'];
+  }
 }
