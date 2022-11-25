@@ -4,7 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:pupuk_frontend/constants.dart';
 
 class LoginRepository {
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(BaseOptions(
+    receiveDataWhenStatusError: true,
+    connectTimeout: 60 * 1000,
+    receiveTimeout: 60 * 1000,
+  ));
   final String _url = AppConfig.url;
 
   Future<dynamic> login(dynamic data) async {
