@@ -73,23 +73,26 @@ class _CameraPageState extends State<CameraPage>
       backgroundColor: Colors.black,
       body: Container(
         color: Colors.black,
-        child: Stack(
+        child: Column(
           children: [
-            Align(
-              alignment: Alignment.center,
-              child: cameraPreview(),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                color: Colors.black,
-                height: 100,
-                width: double.infinity,
-                padding: const EdgeInsets.all(15),
-                margin: const EdgeInsets.only(bottom: 20),
-                child: cameraControl(context),
+            Expanded(
+              child: Stack(
+                children: [
+                  cameraPreview(),
+                  Center(
+                    child: Container(
+                      height: 200,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.yellow),
+                      ),
+                    ),
+                  )
+                ],
               ),
-            )
+            ),
+            cameraControl(context),
           ],
         ),
       ),
@@ -111,44 +114,19 @@ class _CameraPageState extends State<CameraPage>
       child: Transform.scale(
         scale: scale,
         child: Center(
-          child: Stack(
-            children: [
-              CameraPreview(cameraController!),
-              Center(
-                child: Container(
-                  height: 200,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.yellow),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              )
-            ],
-          ),
+          child: CameraPreview(cameraController!),
         ),
       ),
     );
   }
 
   Widget cameraControl(context) {
-    return Expanded(
-      child: Align(
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
-                onCapture(context);
-              },
-              // ignore: sort_child_properties_last
-              child: const Icon(Icons.camera),
-              backgroundColor: Colors.redAccent,
-            )
-          ],
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: FloatingActionButton(
+          child: const Icon(Icons.camera),
+          onPressed: () => onCapture(context),
         ),
       ),
     );
@@ -157,6 +135,26 @@ class _CameraPageState extends State<CameraPage>
   onCapture(context) async {
     try {
       await cameraController!.takePicture().then((value) async {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 15),
+                    Text('Loading')
+                  ],
+                ),
+              ),
+            );
+          },
+        );
         List<int> photoAsBytes = await value.readAsBytes();
         String photoAsBase64 = convert.base64Encode(photoAsBytes);
 
@@ -164,6 +162,7 @@ class _CameraPageState extends State<CameraPage>
         Map<String, dynamic> data = {"umur": 8, "gambar": photoAsBase64};
         tanamanRepository.postTanaman(data).then((value) {
           if (value['code'] == 201) {
+            Navigator.pop(context);
             Navigator.pop(context, true);
           }
         });
