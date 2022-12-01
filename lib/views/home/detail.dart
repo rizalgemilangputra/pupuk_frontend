@@ -16,16 +16,16 @@ class _DetailPageState extends State<DetailPage> {
       appBar: AppBar(
         backgroundColor: AppStyle.appBar,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // MapUtils.openMap(-6.886863, 107.615311);
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(
-          Icons.pin_drop,
-          color: Colors.red,
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // MapUtils.openMap(-6.886863, 107.615311);
+      //   },
+      //   backgroundColor: Colors.green,
+      //   child: const Icon(
+      //     Icons.pin_drop,
+      //     color: Colors.red,
+      //   ),
+      // ),
       body: Column(
         children: [
           Container(

@@ -174,64 +174,136 @@ class _HomePageState extends State<HomePage> {
       itemCount: tanamanList.length,
       itemBuilder: (context, index) {
         TanamanModel tanaman = tanamanList[index];
-        return GFListTile(
-          padding: const EdgeInsets.all(0),
-          color: Colors.white,
-          description: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Umur '),
-                  Text(
-                    '${tanaman.umur}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+        return GestureDetector(
+          onLongPress: () async {
+            HapticFeedback.vibrate();
+            TanamanRepository tanamanRepository = TanamanRepository();
+
+            ArtDialogResponse response = await ArtSweetAlert.show(
+              barrierDismissible: false,
+              context: context,
+              artDialogArgs: ArtDialogArgs(
+                denyButtonText: "tidak",
+                title: "Peringatan",
+                text: "Anda akan menghapus data ini?",
+                confirmButtonText: "Ya",
+                type: ArtSweetAlertType.warning,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Pupuk '),
-                  Text(
-                    '${tanaman.namaPupuk}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Update '),
-                  Text(
-                    '${tanaman.updatedAt}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Keterangan '),
-                  Text(
-                    '${tanaman.keterangan}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              )
-            ],
-          ),
-          avatar: GFAvatar(
-            maxRadius: 50,
-            minRadius: 50,
-            child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  bottomLeft: Radius.circular(10),
+            );
+
+            // ignore: unnecessary_null_comparison
+            if (response == null) {
+              return;
+            }
+
+            if (response.isTapConfirmButton) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    backgroundColor: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 15),
+                          Text('Loading')
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+              await tanamanRepository.deleteTanaman(tanaman.id).then((value) {
+                if (value['code'] == 201) {
+                  Navigator.pop(context);
+                  ArtSweetAlert.show(
+                    context: context,
+                    artDialogArgs: ArtDialogArgs(
+                        type: ArtSweetAlertType.success,
+                        title: 'Berhasil menghapus data'),
+                  );
+                } else {
+                  Navigator.pop(context);
+                  ArtSweetAlert.show(
+                    context: context,
+                    artDialogArgs: ArtDialogArgs(
+                        type: ArtSweetAlertType.danger,
+                        title: 'Gagal menghapus data'),
+                  );
+                }
+              });
+              _tanamanBloc.add(GetTanamanList());
+            }
+          },
+          onTap: () {
+            Navigator.pushNamed(context, '/home/detail', arguments: tanaman);
+          },
+          child: GFListTile(
+            padding: const EdgeInsets.all(0),
+            color: Colors.white,
+            description: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Umur '),
+                    Text(
+                      '${tanaman.umur}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                child: Image.network(tanaman.gambar.toString())),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Pupuk '),
+                    Text(
+                      '${tanaman.namaPupuk}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Update '),
+                    Text(
+                      '${tanaman.updatedAt}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Keterangan '),
+                    Text(
+                      '${tanaman.keterangan}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            avatar: GFAvatar(
+              maxRadius: 50,
+              minRadius: 50,
+              child: Hero(
+                tag: 'imgHero-${tanaman.id}',
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    ),
+                    child: Image.network(tanaman.gambar.toString())),
+              ),
+            ),
           ),
         );
       },
@@ -272,8 +344,29 @@ class _HomePageState extends State<HomePage> {
             }
 
             if (response.isTapConfirmButton) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    backgroundColor: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 15),
+                          Text('Loading')
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
               await tanamanRepository.deleteTanaman(tanaman.id).then((value) {
                 if (value['code'] == 201) {
+                  Navigator.pop(context);
                   ArtSweetAlert.show(
                     context: context,
                     artDialogArgs: ArtDialogArgs(
@@ -281,6 +374,7 @@ class _HomePageState extends State<HomePage> {
                         title: 'Berhasil menghapus data'),
                   );
                 } else {
+                  Navigator.pop(context);
                   ArtSweetAlert.show(
                     context: context,
                     artDialogArgs: ArtDialogArgs(
