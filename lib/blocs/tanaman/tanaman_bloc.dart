@@ -22,5 +22,13 @@ class TanamanBloc extends Bloc<TanamanEvent, TanamanState> {
         );
       }
     });
+
+    on<ShowInGridEvent>((event, emit) {
+      emit.call(ShowInViewState(true));
+    });
+
+    on<ShowInListEvent>((event, emit) {
+      emit.call(ShowInViewState(false));
+    });
   }
 }

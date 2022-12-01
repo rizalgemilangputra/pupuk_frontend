@@ -1,13 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:pupuk_frontend/blocs/tanaman/tanaman_bloc.dart';
 import 'package:pupuk_frontend/constants.dart';
 import 'package:pupuk_frontend/models/tanaman_model.dart';
 import 'package:pupuk_frontend/repository/tanaman_repository.dart';
+import 'package:pupuk_frontend/utils/asset_constants.dart';
 import 'package:pupuk_frontend/utils/camera/Camera.dart';
+import 'package:pupuk_frontend/widgets/listing_icon_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,7 +24,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TanamanBloc _tanamanBloc = TanamanBloc();
   final LocalStorage _localStorage = LocalStorage(AppConfig.localStorageName);
-  bool _shouldPop = false;
+  final bool _shouldPop = false;
+  bool _showGrid = true;
+  late Size _size;
+  late List<TanamanModel> _dataTanaman;
 
   @override
   void initState() {
@@ -29,18 +37,38 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rekomendasi Pupuk'),
         backgroundColor: AppStyle.appBar,
         automaticallyImplyLeading: false,
         actions: [
+          buildListingIcon(
+            AssetsConsts.icGrid,
+            () {
+              if (_showGrid) {
+                return;
+              } else {
+                _tanamanBloc.add(ShowInGridEvent());
+              }
+            },
+          ),
+          buildListingIcon(
+            AssetsConsts.icList,
+            () {
+              if (!_showGrid) {
+                return;
+              } else {
+                _tanamanBloc.add(ShowInListEvent());
+              }
+            },
+          ),
           IconButton(
             onPressed: () async {
               await _localStorage.setItem('is_login', false);
               await _localStorage.setItem('X-Auth-Token', null);
 
-              // ignore: use_build_context_synchronously
               Navigator.pushReplacementNamed(context, '/login');
             },
             icon: const Icon(Icons.exit_to_app),
@@ -50,12 +78,28 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         padding: const EdgeInsets.all(8),
         child: WillPopScope(
-            child: _gridPage(),
+            child: _bodyPage(),
             onWillPop: () async {
               return _shouldPop;
             }),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _floatingButtonAction(),
+    );
+  }
+
+  Widget _floatingButtonAction() {
+    return TweenAnimationBuilder<Offset>(
+      tween:
+          Tween<Offset>(begin: const Offset(0, -800), end: const Offset(0, 0)),
+      duration: const Duration(seconds: 2),
+      curve: Curves.bounceInOut,
+      builder: (context, Offset offset, child) {
+        return Transform.translate(
+          offset: offset,
+          child: child,
+        );
+      },
+      child: FloatingActionButton(
         onPressed: () async {
           final callBack = await Navigator.push(
             context,
@@ -75,13 +119,13 @@ class _HomePageState extends State<HomePage> {
             });
           }
         },
-        backgroundColor: Colors.green,
+        backgroundColor: AppStyle.appBar,
         child: const Icon(Icons.camera_alt),
       ),
     );
   }
 
-  Widget _gridPage() {
+  Widget _bodyPage() {
     return BlocProvider(
       create: (_) => _tanamanBloc,
       child: BlocListener<TanamanBloc, TanamanState>(
@@ -100,8 +144,12 @@ class _HomePageState extends State<HomePage> {
               return _buildLoading();
             } else if (state is TanamanLoading) {
               return _buildLoading();
+            } else if (state is ShowInViewState) {
+              _showGrid = state.inGrid;
+              return _listTanaman(context, _dataTanaman);
             } else if (state is TanamanLoaded) {
-              return _listTanaman(context, state.tanamanModel);
+              _dataTanaman = state.tanamanModel;
+              return _listTanaman(context, _dataTanaman);
             } else if (state is TanamanError) {
               return Container();
             } else {
@@ -114,10 +162,89 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _listTanaman(BuildContext context, List<TanamanModel> tanamanList) {
+    if (_showGrid) {
+      return _buildGridView(context, tanamanList);
+    } else {
+      return _buildListView(context, tanamanList);
+    }
+  }
+
+  Widget _buildListView(BuildContext context, List<TanamanModel> tanamanList) {
+    return ListView.builder(
+      itemCount: tanamanList.length,
+      itemBuilder: (context, index) {
+        TanamanModel tanaman = tanamanList[index];
+        return GFListTile(
+          padding: const EdgeInsets.all(0),
+          color: Colors.white,
+          description: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Umur '),
+                  Text(
+                    '${tanaman.umur}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Pupuk '),
+                  Text(
+                    '${tanaman.namaPupuk}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Update '),
+                  Text(
+                    '${tanaman.updatedAt}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Keterangan '),
+                  Text(
+                    '${tanaman.keterangan}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              )
+            ],
+          ),
+          avatar: GFAvatar(
+            maxRadius: 50,
+            minRadius: 50,
+            child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                ),
+                child: Image.network(tanaman.gambar.toString())),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildGridView(BuildContext context, List<TanamanModel> tanamanList) {
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 2 / 2.4,
+        mainAxisSpacing: _size.height * 0.01,
+        crossAxisSpacing: _size.height * 0.01,
       ),
       itemCount: tanamanList.length,
       itemBuilder: (BuildContext context, index) {

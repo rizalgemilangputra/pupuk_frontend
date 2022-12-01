@@ -8,3 +8,7 @@ abstract class TanamanEvent extends Equatable {
 }
 
 class GetTanamanList extends TanamanEvent {}
+
+class ShowInGridEvent extends TanamanEvent {}
+
+class ShowInListEvent extends TanamanEvent {}

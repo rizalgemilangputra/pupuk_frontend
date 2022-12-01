@@ -20,3 +20,9 @@ class TanamanError extends TanamanState {
   final String? message;
   const TanamanError(this.message);
 }
+
+// ignore: must_be_immutable
+class ShowInViewState extends TanamanState {
+  bool inGrid = true;
+  ShowInViewState(this.inGrid);
+}
