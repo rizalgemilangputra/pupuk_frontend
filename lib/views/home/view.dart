@@ -246,7 +246,6 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(0),
             color: Colors.white,
             description: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 10),
                 Row(
@@ -279,16 +278,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Keterangan '),
-                    Text(
-                      '${tanaman.keterangan}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                )
+                const SizedBox(height: 5),
+                const Text('Lihat Detail',
+                    style: TextStyle(fontWeight: FontWeight.bold))
               ],
             ),
             avatar: GFAvatar(

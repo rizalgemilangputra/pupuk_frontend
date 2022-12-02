@@ -16,7 +16,7 @@ class TanamanModel {
 
   TanamanModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    umur = json['umur'];
+    umur = int.parse(json['umur']);
     namaPupuk = json['nama_pupuk'];
     keterangan = json['keterangan'];
     updatedAt = json['updated_at'];
