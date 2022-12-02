@@ -5,7 +5,6 @@ class AppStyle {
 }
 
 class AppConfig {
-  // static String url = 'http://192.168.110.166/pupuk_backend/public/';
-  static String url = 'https://rekomen-pupuk.herokuapp.com/';
+  static String url = 'https://aplikasipupuk.site/';
   static String localStorageName = 'pupuk';
 }
