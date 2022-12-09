@@ -1,3 +1,5 @@
+import 'package:pupuk_frontend/models/clarifai_model.dart';
+
 class TanamanModel {
   int? id;
   int? umur;
@@ -5,6 +7,7 @@ class TanamanModel {
   String? keterangan;
   String? updatedAt;
   String? gambar;
+  List<Clarifai>? clarifais;
 
   TanamanModel(
       {this.id,
@@ -12,7 +15,8 @@ class TanamanModel {
       this.namaPupuk,
       this.keterangan,
       this.updatedAt,
-      this.gambar});
+      this.gambar,
+      this.clarifais});
 
   TanamanModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -21,6 +25,12 @@ class TanamanModel {
     keterangan = json['keterangan'];
     updatedAt = json['updated_at'];
     gambar = json['gambar'];
+    if (json['clarifais'] != null) {
+      clarifais = [];
+      json['clarifais'].forEach((v) {
+        clarifais!.add(Clarifai.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {

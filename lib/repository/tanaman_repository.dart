@@ -18,6 +18,7 @@ class TanamanRepository {
           localStorage.getItem('X-Auth-Token');
 
       Response response = await _dio.get('$_url/plants');
+      // print(response.data);
       List<TanamanModel> data = [];
       response.data.forEach((v) {
         data.add(TanamanModel.fromJson(v));

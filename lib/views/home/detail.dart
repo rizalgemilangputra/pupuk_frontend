@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pupuk_frontend/constants.dart';
+import 'package:pupuk_frontend/models/clarifai_model.dart';
 
 class DetailPage extends StatefulWidget {
   final dynamic tanaman;
@@ -80,6 +81,31 @@ class _DetailPageState extends State<DetailPage> {
                       style: const TextStyle(fontSize: 12),
                     ),
                   ],
+                ),
+                const SizedBox(height: 20),
+                const Center(
+                  child: Text(
+                    'Clarifai',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Column(
+                  children:
+                      List.generate(widget.tanaman.clarifais.length, (index) {
+                    Clarifai clarifai = widget.tanaman.clarifais[index];
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // ignore: prefer_const_literals_to_create_immutables
+                      children: [
+                        Text(clarifai.nilai.toString()),
+                        Text(
+                          clarifai.warna.toString(),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    );
+                  }),
                 ),
               ],
             ),
