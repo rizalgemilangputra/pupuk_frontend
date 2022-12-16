@@ -5,6 +5,7 @@ class TanamanModel {
   int? umur;
   String? namaPupuk;
   String? keterangan;
+  String? dosis;
   String? updatedAt;
   String? gambar;
   List<Clarifai>? clarifais;
@@ -14,6 +15,7 @@ class TanamanModel {
       this.umur,
       this.namaPupuk,
       this.keterangan,
+      this.dosis,
       this.updatedAt,
       this.gambar,
       this.clarifais});
@@ -23,6 +25,7 @@ class TanamanModel {
     umur = int.parse(json['umur']);
     namaPupuk = json['nama_pupuk'];
     keterangan = json['keterangan'];
+    dosis = json['dosis'];
     updatedAt = json['updated_at'];
     gambar = json['gambar'];
     if (json['clarifais'] != null) {
@@ -39,6 +42,7 @@ class TanamanModel {
     data['umur'] = umur;
     data['namaPupuk'] = namaPupuk;
     data['keterangan'] = keterangan;
+    data['dosis'] = dosis;
     data['updated_at'] = updatedAt;
     data['gambar'] = gambar;
     return data;

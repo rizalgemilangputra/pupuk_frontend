@@ -67,6 +67,18 @@ class _DetailPageState extends State<DetailPage> {
                   ],
                 ),
                 const Divider(color: Colors.black),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // ignore: prefer_const_literals_to_create_immutables
+                  children: [
+                    const Text('Dosis'),
+                    Text(
+                      widget.tanaman.dosis,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const Divider(color: Colors.black),
                 const SizedBox(height: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
