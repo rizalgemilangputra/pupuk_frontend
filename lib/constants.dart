@@ -5,6 +5,6 @@ class AppStyle {
 }
 
 class AppConfig {
-  static String url = 'https://aplikasipupuk.site/';
+  static String url = 'https://appskripsi.store/';
   static String localStorageName = 'pupuk';
 }

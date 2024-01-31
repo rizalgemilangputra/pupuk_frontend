@@ -22,10 +22,12 @@ class TanamanRepository {
       List<TanamanModel> data = [];
       response.data.forEach((v) {
         data.add(TanamanModel.fromJson(v));
+        // print(v);
       });
+      // print(data);
       return data;
-    } catch (error) {
-      //error, stacktrace
+    } catch (error, stacktrace) {
+      //
       // print("Exception occured: $error stackTrace: $stacktrace");
       // return TanamanModel.withError("Data not found / Connection issue");
       throw Exception("Data not found / Connection issue => $error");

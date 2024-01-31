@@ -22,7 +22,7 @@ class TanamanModel {
 
   TanamanModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    umur = int.parse(json['umur']);
+    umur = json['umur'];
     namaPupuk = json['nama_pupuk'];
     keterangan = json['keterangan'];
     dosis = json['dosis'];

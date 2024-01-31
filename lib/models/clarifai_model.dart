@@ -8,7 +8,7 @@ class Clarifai {
   Clarifai.fromJson(Map<String, dynamic> json) {
     hex = json['hex'];
     warna = json['warna'];
-    nilai = double.parse(json['nilai']);
+    nilai = json['nilai'];
   }
 
   Map<String, dynamic> toJson() {
