@@ -20,7 +20,6 @@ class TanamanRepository {
       Response response = await _dio.get('$_url/plants');
       List<TanamanModel> data = [];
       response.data.forEach((v) {
-        print(v);
         data.add(TanamanModel.fromJson(v));
       });
       return data;
