@@ -43,18 +43,18 @@ class _DetailPageState extends State<DetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  // ignore: prefer_const_literals_to_create_immutables
-                  children: [
-                    const Text('Umur'),
-                    Text(
-                      widget.tanaman.umur.toString(),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const Divider(color: Colors.black),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   // ignore: prefer_const_literals_to_create_immutables
+                //   children: [
+                //     const Text('Umur'),
+                //     Text(
+                //       widget.tanaman.umur.toString(),
+                //       style: const TextStyle(fontWeight: FontWeight.bold),
+                //     ),
+                //   ],
+                // ),
+                // const Divider(color: Colors.black),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   // ignore: prefer_const_literals_to_create_immutables

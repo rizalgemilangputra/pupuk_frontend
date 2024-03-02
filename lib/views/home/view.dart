@@ -117,6 +117,15 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               _tanamanBloc.add(GetTanamanList());
             });
+          } else {
+            ArtSweetAlert.show(
+              context: context,
+              artDialogArgs: ArtDialogArgs(
+                type: ArtSweetAlertType.danger,
+                title: "Gagal",
+                text: "Gambar harus berupa daun!",
+              ),
+            );
           }
         },
         backgroundColor: AppStyle.appBar,

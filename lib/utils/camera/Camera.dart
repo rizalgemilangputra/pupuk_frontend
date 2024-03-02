@@ -164,6 +164,9 @@ class _CameraPageState extends State<CameraPage>
           if (value['code'] == 201) {
             Navigator.pop(context);
             Navigator.pop(context, true);
+          } else if (value['code'] == 400) {
+            Navigator.pop(context);
+            Navigator.pop(context, false);
           }
         });
       });

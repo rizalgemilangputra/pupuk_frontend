@@ -18,18 +18,13 @@ class TanamanRepository {
           localStorage.getItem('X-Auth-Token');
 
       Response response = await _dio.get('$_url/plants');
-      // print(response.data);
       List<TanamanModel> data = [];
       response.data.forEach((v) {
+        print(v);
         data.add(TanamanModel.fromJson(v));
-        // print(v);
       });
-      // print(data);
       return data;
     } catch (error, stacktrace) {
-      //
-      // print("Exception occured: $error stackTrace: $stacktrace");
-      // return TanamanModel.withError("Data not found / Connection issue");
       throw Exception("Data not found / Connection issue => $error");
     }
   }
